@@ -50,6 +50,11 @@ func (h *handler) Create(c *fiber.Ctx) error {
 			Err:     presentations.ErrCarsAlreadyExist,
 			Message: presentations.ErrCarsAlreadyExist.Error(),
 		},
+		{
+			Code:    http.StatusConflict,
+			Err:     presentations.ErrCarsNotAvailable,
+			Message: presentations.ErrCarsNotAvailable.Error(),
+		},
 	})
 
 	var payload entity.Order

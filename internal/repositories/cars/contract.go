@@ -16,4 +16,5 @@ type Cars interface {
 	Delete(ctx context.Context, carsID int) error
 	Latest(ctx context.Context) (*presentations.Cars, error)
 	CheckAvailableCars(ctx context.Context, m *meta.Params, startDate, endDate time.Time) ([]presentations.Cars, error)
+	CheckAvailableCar(ctx context.Context, carID int, startDate, endDate time.Time) (*presentations.Cars, error)
 }

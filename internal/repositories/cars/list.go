@@ -107,3 +107,39 @@ func (r *repo) CheckAvailableCars(ctx context.Context, m *meta.Params, startDate
 	}
 	return result, nil
 }
+
+func (r *repo) CheckAvailableCar(ctx context.Context, carID int, startDate, endDate time.Time) (*presentations.Cars, error) {
+
+	var (
+		result presentations.Cars
+	)
+	query := `select 
+				* 
+			from 
+				cars 
+			where car_id in (
+				select 
+					orders.car_id
+				from orders 
+				where pickup_date >= :pickup_date 
+				and dropoff_date <= :dropoff_date
+				and car_id = :car_id
+			) and is_active=true`
+
+	args := map[string]any{
+		"pickup_date":  startDate,
+		"dropoff_date": endDate,
+		"car_id":       carID,
+	}
+
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+
+	err = stmt.GetContext(ctx, &result, args)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+	return &result, nil
+}

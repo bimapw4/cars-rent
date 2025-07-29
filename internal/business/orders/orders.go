@@ -32,6 +32,11 @@ func NewBusiness(repo *repositories.Repository) Orders {
 
 func (b *business) Create(ctx context.Context, payload entity.Order) (*presentations.Order, error) {
 
+	exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
+	if exist != nil {
+		return nil, presentations.ErrCarsNotAvailable
+	}
+
 	err := b.repo.Order.Create(ctx, presentations.Order{
 		CarID:           payload.CarID,
 		OrderDate:       payload.OrderDate,
@@ -72,6 +77,11 @@ func (b *business) Detail(ctx context.Context, carsID int) (*presentations.Order
 }
 
 func (b *business) Update(ctx context.Context, payload entity.Order, carsID int) (*presentations.Order, error) {
+
+	exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
+	if exist != nil {
+		return nil, presentations.ErrCarsNotAvailable
+	}
 
 	order, err := b.repo.Order.Detail(ctx, carsID)
 	if err != nil {

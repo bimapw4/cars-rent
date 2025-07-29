@@ -8,6 +8,7 @@ import (
 const (
 	ErrCarsNotExist          = common.Error("err cars not exist")
 	ErrCarsAlreadyExist      = common.Error("err cars already exist")
+	ErrCarsNotAvailable      = common.Error("err cars not avialable")
 	ErrCarsAlreadyActivate   = common.Error("err cars already activate")
 	ErrCarsAlreadyDeactivate = common.Error("err cars already deactivate")
 )
