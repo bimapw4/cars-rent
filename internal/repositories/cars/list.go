@@ -86,9 +86,10 @@ func (r *repo) CheckAvailableCars(ctx context.Context, m *meta.Params, startDate
 			from 
 				cars 
 			where car_id not in (
-				select 
-					orders.car_id
-				from orders where pickup_date >= :pickup_date and dropoff_date <= :dropoff_date
+				SELECT orders.car_id
+				FROM orders 
+				WHERE pickup_date <= :dropoff_date
+				AND dropoff_date >= :pickup_date 
 			) and is_active=true`
 
 	args := map[string]any{
@@ -118,12 +119,13 @@ func (r *repo) CheckAvailableCar(ctx context.Context, carID int, startDate, endD
 			from 
 				cars 
 			where car_id in (
-				select 
-					orders.car_id
-				from orders 
-				where pickup_date >= :pickup_date 
-				and dropoff_date <= :dropoff_date
-				and car_id = :car_id
+				SELECT car_id
+				FROM orders
+				WHERE car_id = :car_id
+				AND NOT (
+					:dropoff_date <= pickup_date OR
+					:pickup_date >= dropoff_date
+				)
 			) and is_active=true`
 
 	args := map[string]any{
