@@ -46,6 +46,11 @@ func (h *handler) Create(c *fiber.Ctx) error {
 			Message: presentations.ErrOrdersNotExist.Error(),
 		},
 		{
+			Code:    http.StatusNotFound,
+			Err:     presentations.ErrCarsNotExist,
+			Message: presentations.ErrCarsNotExist.Error(),
+		},
+		{
 			Code:    http.StatusConflict,
 			Err:     presentations.ErrCarsAlreadyExist,
 			Message: presentations.ErrCarsAlreadyExist.Error(),
@@ -88,6 +93,11 @@ func (h *handler) Update(c *fiber.Ctx) error {
 			Code:    http.StatusNotFound,
 			Err:     presentations.ErrOrdersNotExist,
 			Message: presentations.ErrOrdersNotExist.Error(),
+		},
+		{
+			Code:    http.StatusNotFound,
+			Err:     presentations.ErrCarsNotExist,
+			Message: presentations.ErrCarsNotExist.Error(),
 		},
 		{
 			Code:    http.StatusConflict,
