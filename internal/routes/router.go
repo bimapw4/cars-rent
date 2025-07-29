@@ -11,6 +11,7 @@ func Routes(app *fiber.App, handler handlers.Handlers, m *middleware.Authenticat
 	// register route
 	routes := []func(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication){
 		CarsRouter,
+		OrdersRouter,
 	}
 
 	for _, route := range routes {
