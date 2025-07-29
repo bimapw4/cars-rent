@@ -66,12 +66,18 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return response.NewResponse(Entity).
 			Errors("err parse body payload", err.Error()).
-			JSON(c, http.StatusBadRequest)
+			JSON(c, http.StatusUnprocessableEntity)
+	}
+
+	if err := payload.Validate(); err != nil {
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", errs.Err).
+			JSON(c, http.StatusUnprocessableEntity)
 	}
 
 	res, err := h.business.Order.Create(c.UserContext(), payload)
 	if err != nil {
-		fmt.Println("err == ", err)
 		errs := custErr.GetError(err)
 		return response.NewResponse(Entity).
 			Errors("err create order", errs.Message).
@@ -116,6 +122,13 @@ func (h *handler) Update(c *fiber.Ctx) error {
 		return response.NewResponse(Entity).
 			Errors("err parse body payload", err.Error()).
 			JSON(c, http.StatusBadRequest)
+	}
+
+	if err := payload.Validate(); err != nil {
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", errs.Err).
+			JSON(c, http.StatusUnprocessableEntity)
 	}
 
 	orderID := c.Params("order_id")
