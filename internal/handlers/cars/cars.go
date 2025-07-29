@@ -91,7 +91,7 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	image, err := c.FormFile("image")
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "image cannot be blank").
 			JSON(c, fiber.StatusBadRequest)
 	}
 
@@ -125,14 +125,14 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	floatdayRate, err := strconv.ParseFloat(dayRate, 64)
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "day_rate must be number").
 			JSON(c, fiber.StatusUnprocessableEntity)
 	}
 
 	floatMonthRate, err := strconv.ParseFloat(monthRate, 64)
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "month_rate must be number").
 			JSON(c, fiber.StatusUnprocessableEntity)
 	}
 
@@ -205,7 +205,7 @@ func (h *handler) Update(c *fiber.Ctx) error {
 	image, err := c.FormFile("image")
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "image cannot be blank").
 			JSON(c, fiber.StatusBadRequest)
 	}
 
@@ -239,14 +239,14 @@ func (h *handler) Update(c *fiber.Ctx) error {
 	floatdayRate, err := strconv.ParseFloat(dayRate, 64)
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "day_rate must be number").
 			JSON(c, fiber.StatusUnprocessableEntity)
 	}
 
 	floatMonthRate, err := strconv.ParseFloat(monthRate, 64)
 	if err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err).
+			Errors("Failed to parse request body", "month_rate must be number").
 			JSON(c, fiber.StatusUnprocessableEntity)
 	}
 

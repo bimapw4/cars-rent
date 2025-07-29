@@ -15,6 +15,7 @@ func (r *repo) Update(ctx context.Context, payload *presentations.Cars) error {
 			car_name=:car_name,
 			day_rate=:day_rate,
 			month_rate=:month_rate, 
+			image=:image, 
 			updated_at=:updated_at
 		where 
 			car_id=:car_id`
