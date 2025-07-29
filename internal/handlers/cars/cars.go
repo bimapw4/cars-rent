@@ -58,6 +58,13 @@ func (h *handler) Create(c *fiber.Ctx) error {
 		},
 	})
 
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
+
 	payload := entity.Cars{}
 
 	carsName := c.FormValue("cars_name")
@@ -164,6 +171,13 @@ func (h *handler) Update(c *fiber.Ctx) error {
 			Message: presentations.ErrCarsAlreadyExist.Error(),
 		},
 	})
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	payload := entity.Cars{}
 
@@ -354,6 +368,13 @@ func (h *handler) Delete(c *fiber.Ctx) error {
 		},
 	})
 
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
+
 	carsID := c.Params("cars_id")
 	intCars, err := strconv.Atoi(carsID)
 	if err != nil {
@@ -398,6 +419,13 @@ func (h *handler) Activate(c *fiber.Ctx) error {
 		},
 	})
 
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
+
 	carsID := c.Params("cars_id")
 	intCars, err := strconv.Atoi(carsID)
 	if err != nil {
@@ -441,6 +469,13 @@ func (h *handler) Deactivate(c *fiber.Ctx) error {
 			Message: presentations.ErrCarsAlreadyDeactivate.Error(),
 		},
 	})
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	carsID := c.Params("cars_id")
 	intCars, err := strconv.Atoi(carsID)
