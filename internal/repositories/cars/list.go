@@ -106,6 +106,45 @@ func (r *repo) CheckAvailableCars(ctx context.Context, m *meta.Params, startDate
 	if err != nil {
 		return nil, r.translateError(err)
 	}
+
+	cou, err := r.CountCheckAvailableCars(ctx, m, startDate, endDate)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+	m.TotalItems = cou
+	return result, nil
+}
+
+func (r *repo) CountCheckAvailableCars(ctx context.Context, m *meta.Params, startDate, endDate time.Time) (int, error) {
+
+	var (
+		result = 0
+	)
+	query := `select 
+				count(*)
+			from 
+				cars 
+			where car_id not in (
+				SELECT orders.car_id
+				FROM orders 
+				WHERE pickup_date <= :dropoff_date
+				AND dropoff_date >= :pickup_date 
+			) and is_active=true`
+
+	args := map[string]any{
+		"pickup_date":  startDate,
+		"dropoff_date": endDate,
+	}
+
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return 0, r.translateError(err)
+	}
+
+	err = stmt.GetContext(ctx, &result, args)
+	if err != nil {
+		return 0, r.translateError(err)
+	}
 	return result, nil
 }
 
