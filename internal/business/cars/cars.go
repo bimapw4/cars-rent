@@ -37,7 +37,7 @@ func (b *business) Create(ctx context.Context, payload entity.Cars) (*presentati
 		CarName:   payload.CarsName,
 		DayRate:   payload.DayRate,
 		MonthRate: payload.MonthRate,
-		Image:     payload.Image,
+		Image:     "-",
 		IsActive:  true,
 	})
 	if err != nil {
@@ -83,7 +83,7 @@ func (b *business) Update(ctx context.Context, payload entity.Cars, carsID int) 
 		CarName:   payload.CarsName,
 		DayRate:   payload.DayRate,
 		MonthRate: payload.MonthRate,
-		Image:     payload.Image,
+		Image:     "-",
 		IsActive:  cars.IsActive,
 		CreatedAT: cars.CreatedAT,
 		UpdatedAt: time.Now().Local(),

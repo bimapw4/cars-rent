@@ -7,8 +7,11 @@ import (
 	"car-rent/internal/presentations"
 	"car-rent/internal/response"
 	"car-rent/pkg/meta"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -54,16 +57,84 @@ func (h *handler) Create(c *fiber.Ctx) error {
 		},
 	})
 
-	var payload entity.Cars
-	if err := c.BodyParser(&payload); err != nil {
+	payload := entity.Cars{}
+
+	carsName := c.FormValue("cars_name")
+	if carsName == "" {
 		return response.NewResponse(Entity).
-			Errors("err parse body payload", err.Error()).
-			JSON(c, http.StatusBadRequest)
+			Errors("Failed to parse request body", "cars_name is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
 	}
+
+	dayRate := c.FormValue("day_rate")
+	if dayRate == "" {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", "day_rate is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	monthRate := c.FormValue("month_rate")
+	if monthRate == "" {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", "month_rate is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	image, err := c.FormFile("image")
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	ext := filepath.Ext(image.Filename)
+	switch ext {
+	case ".png", ".jpg", ".jpeg":
+	default:
+		err := []string{"content type must be a html"}
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	if image.Size > (5 * 1024 * 1024) {
+		err = errors.New("file size cannot be more than 5MB")
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	path := fmt.Sprintf("./storage/%v-%v", time.Now().Unix(), image.Filename)
+
+	err = c.SaveFile(image, path)
+	if err != nil {
+		log.Println(err)
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	floatdayRate, err := strconv.ParseFloat(dayRate, 64)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	floatMonthRate, err := strconv.ParseFloat(monthRate, 64)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	payload.Image = path
+	payload.CarsName = carsName
+	payload.DayRate = floatdayRate
+	payload.MonthRate = floatMonthRate
 
 	res, err := h.business.Cars.Create(c.UserContext(), payload)
 	if err != nil {
-		fmt.Println("err == ", err)
 		errs := custErr.GetError(err)
 		return response.NewResponse(Entity).
 			Errors("err create cars", errs.Message).
@@ -93,12 +164,81 @@ func (h *handler) Update(c *fiber.Ctx) error {
 		},
 	})
 
-	var payload entity.Cars
-	if err := c.BodyParser(&payload); err != nil {
+	payload := entity.Cars{}
+
+	carsName := c.FormValue("cars_name")
+	if carsName == "" {
 		return response.NewResponse(Entity).
-			Errors("err parse body payload", err.Error()).
-			JSON(c, http.StatusBadRequest)
+			Errors("Failed to parse request body", "cars_name is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
 	}
+
+	dayRate := c.FormValue("day_rate")
+	if dayRate == "" {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", "day_rate is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	monthRate := c.FormValue("month_rate")
+	if monthRate == "" {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", "month_rate is required").
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	image, err := c.FormFile("image")
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	ext := filepath.Ext(image.Filename)
+	switch ext {
+	case ".png", ".jpg", ".jpeg":
+	default:
+		err := []string{"content type must be a html"}
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	if image.Size > (5 * 1024 * 1024) {
+		err = errors.New("file size cannot be more than 5MB")
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	path := fmt.Sprintf("./storage/%v-%v", time.Now().Unix(), image.Filename)
+
+	err = c.SaveFile(image, path)
+	if err != nil {
+		log.Println(err)
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	floatdayRate, err := strconv.ParseFloat(dayRate, 64)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	floatMonthRate, err := strconv.ParseFloat(monthRate, 64)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusUnprocessableEntity)
+	}
+
+	payload.Image = path
+	payload.CarsName = carsName
+	payload.DayRate = floatdayRate
+	payload.MonthRate = floatMonthRate
 
 	carsID := c.Params("cars_id")
 	intCars, err := strconv.Atoi(carsID)
