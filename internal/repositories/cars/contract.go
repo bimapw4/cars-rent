@@ -4,6 +4,7 @@ import (
 	"car-rent/internal/presentations"
 	"car-rent/pkg/meta"
 	"context"
+	"time"
 )
 
 type Cars interface {
@@ -14,4 +15,5 @@ type Cars interface {
 	UpdateIsActive(ctx context.Context, carsID int, isActive bool) error
 	Delete(ctx context.Context, carsID int) error
 	Latest(ctx context.Context) (*presentations.Cars, error)
+	CheckAvailableCars(ctx context.Context, m *meta.Params, startDate, endDate time.Time) ([]presentations.Cars, error)
 }

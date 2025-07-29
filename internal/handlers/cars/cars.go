@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,6 +23,7 @@ type Handler interface {
 	Delete(c *fiber.Ctx) error
 	Activate(c *fiber.Ctx) error
 	Deactivate(c *fiber.Ctx) error
+	AvailableCars(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -317,5 +319,79 @@ func (h *handler) Deactivate(c *fiber.Ctx) error {
 
 	return response.NewResponse(Entity).
 		Success("Successfully Deactivate Cars", nil).
+		JSON(c, http.StatusOK)
+}
+
+func (h *handler) AvailableCars(c *fiber.Ctx) error {
+	var (
+		Entity = "AvailableCars"
+	)
+
+	errAvail := common.DefaultAvailableErrors()
+	custErr := errAvail.CustomeError(common.AvailableErrors{
+		{
+			Code:    http.StatusNotFound,
+			Err:     presentations.ErrCarsNotExist,
+			Message: presentations.ErrCarsNotExist.Error(),
+		},
+		{
+			Code:    http.StatusConflict,
+			Err:     presentations.ErrCarsAlreadyExist,
+			Message: presentations.ErrCarsAlreadyExist.Error(),
+		},
+	})
+
+	q := c.Queries()
+	m := meta.NewParams(q)
+
+	startDate := c.Query("start_date")
+	if startDate == "" {
+		return response.NewResponse(Entity).
+			Errors("err parse query payload", "start_date cannot be blank").
+			JSON(c, http.StatusBadRequest)
+	}
+
+	timstartDate, err := time.Parse(time.RFC3339, startDate)
+	if err != nil {
+		fmt.Println("sasa 1", err)
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", errs.Message).
+			JSON(c, errs.Code)
+	}
+
+	endDate := c.Query("end_date")
+	if startDate == "" {
+		return response.NewResponse(Entity).
+			Errors("err parse query payload", "end_date cannot be blank").
+			JSON(c, http.StatusBadRequest)
+	}
+
+	timendDate, err := time.Parse(time.RFC3339, endDate)
+	if err != nil {
+		fmt.Println("sasa 2", err)
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", errs.Message).
+			JSON(c, errs.Code)
+	}
+
+	if timstartDate.After(timendDate) {
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", "end date cannot less than start date").
+			JSON(c, http.StatusBadRequest)
+	}
+
+	res, err := h.business.Cars.AvailableCars(c.UserContext(), &m, timstartDate, timendDate)
+	if err != nil {
+		fmt.Println("sasa 3", err)
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err parse body payload", errs.Message).
+			JSON(c, errs.Code)
+	}
+
+	return response.NewResponse(Entity).
+		SuccessWithMeta("Successfully List Available Cars", res, m).
 		JSON(c, http.StatusOK)
 }

@@ -18,6 +18,7 @@ type Cars interface {
 	Delete(ctx context.Context, carsID int) error
 	Activate(ctx context.Context, carsID int) error
 	Deactivate(ctx context.Context, carsID int) error
+	AvailableCars(ctx context.Context, m *meta.Params, startdate, enddate time.Time) ([]presentations.Cars, error)
 }
 
 type business struct {
@@ -141,4 +142,14 @@ func (b *business) Deactivate(ctx context.Context, carsID int) error {
 		return err
 	}
 	return nil
+}
+
+func (b *business) AvailableCars(ctx context.Context, m *meta.Params, startdate, enddate time.Time) ([]presentations.Cars, error) {
+
+	res, err := b.repo.Cars.CheckAvailableCars(ctx, m, startdate, enddate)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
