@@ -27,6 +27,7 @@ type Handler interface {
 	Activate(c *fiber.Ctx) error
 	Deactivate(c *fiber.Ctx) error
 	AvailableCars(c *fiber.Ctx) error
+	Preview(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -534,4 +535,41 @@ func (h *handler) AvailableCars(c *fiber.Ctx) error {
 	return response.NewResponse(Entity).
 		SuccessWithMeta("Successfully List Available Cars", res, m).
 		JSON(c, http.StatusOK)
+}
+
+func (h *handler) Preview(c *fiber.Ctx) error {
+	var (
+		Entity = "PreviewCars"
+	)
+	errAvail := common.DefaultAvailableErrors()
+	custErr := errAvail.CustomeError(common.AvailableErrors{
+		{
+			Code:    http.StatusNotFound,
+			Err:     presentations.ErrCarsNotExist,
+			Message: presentations.ErrCarsNotExist.Error(),
+		},
+		{
+			Code:    http.StatusConflict,
+			Err:     presentations.ErrCarsAlreadyExist,
+			Message: presentations.ErrCarsAlreadyExist.Error(),
+		},
+	})
+
+	carsID := c.Params("cars_id")
+	intCars, err := strconv.Atoi(carsID)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("err parse params", err.Error()).
+			JSON(c, http.StatusBadRequest)
+	}
+
+	res, err := h.business.Cars.Detail(c.UserContext(), intCars)
+	if err != nil {
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err get preview cars", errs.Message).
+			JSON(c, errs.Code)
+	}
+
+	return c.SendFile(res.Image)
 }

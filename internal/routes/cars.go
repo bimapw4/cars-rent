@@ -16,4 +16,5 @@ func CarsRouter(app *fiber.App, handler handlers.Handlers, middleware *middlewar
 	app.Put("/cars/activate/:cars_id", handler.Cars.Activate)
 	app.Put("/cars/deactivate/:cars_id", handler.Cars.Deactivate)
 	app.Get("/cars/schedulle/available", handler.Cars.AvailableCars)
+	app.Get("/cars/preview/:cars_id", handler.Cars.Preview)
 }
