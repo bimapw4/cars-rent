@@ -1,18 +1,16 @@
 package common
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
-func GetWeekNumber(startDate, paymentDate time.Time) int {
+func CalculateRentalCost(pickupDate, dropoffDate time.Time, dayRate, monthRate float64) float64 {
+	duration := dropoffDate.Sub(pickupDate).Hours() / 24
+	totalDays := int(math.Ceil(duration))
 
-	start := startDate.Truncate(24 * time.Hour)
-	payment := paymentDate.Truncate(24 * time.Hour)
+	months := totalDays / 30
+	remainingDays := totalDays % 30
 
-	days := int(payment.Sub(start).Hours() / 24)
-
-	week := (days / 7) + 1
-
-	if week < 1 {
-		return 1
-	}
-	return week
+	return float64(months)*monthRate + float64(remainingDays)*dayRate
 }

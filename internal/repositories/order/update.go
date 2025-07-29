@@ -16,6 +16,7 @@ func (r *repo) Update(ctx context.Context, input *presentations.Order) error {
 			pickup_date = :pickup_date,
 			dropoff_date = :dropoff_date,
 			pickup_location = :pickup_location,
+			total_payment = :total_payment,
 			dropoff_location = :dropoff_location,
 			updated_at = :updated_at
 		WHERE
@@ -29,6 +30,7 @@ func (r *repo) Update(ctx context.Context, input *presentations.Order) error {
 		"dropoff_date":     input.DropoffDate,
 		"pickup_location":  input.PickupLocation,
 		"dropoff_location": input.DropoffLocation,
+		"total_payment":    input.TotalPayment,
 		"updated_at":       time.Now().Local(),
 	}
 

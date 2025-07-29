@@ -1,6 +1,7 @@
 package order
 
 import (
+	"car-rent/internal/common"
 	"car-rent/internal/entity"
 	"car-rent/internal/presentations"
 	"car-rent/internal/repositories"
@@ -32,18 +33,28 @@ func NewBusiness(repo *repositories.Repository) Orders {
 
 func (b *business) Create(ctx context.Context, payload entity.Order) (*presentations.Order, error) {
 
+	userctx := common.GetUserCtx(ctx)
 	exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
 	if exist != nil {
 		return nil, presentations.ErrCarsNotAvailable
 	}
 
-	err := b.repo.Order.Create(ctx, presentations.Order{
+	cars, err := b.repo.Cars.Detail(ctx, payload.CarID)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPayment := common.CalculateRentalCost(payload.PickupDate, payload.DropoffDate, cars.DayRate, cars.MonthRate)
+
+	err = b.repo.Order.Create(ctx, presentations.Order{
 		CarID:           payload.CarID,
 		OrderDate:       payload.OrderDate,
 		PickupDate:      payload.PickupDate,
 		DropoffDate:     payload.DropoffDate,
 		PickupLocation:  payload.PickupLocation,
 		DropoffLocation: payload.DropoffLocation,
+		TotalPayment:    totalPayment,
+		UserID:          userctx.UserID,
 	})
 	if err != nil {
 		return nil, err
@@ -88,6 +99,13 @@ func (b *business) Update(ctx context.Context, payload entity.Order, carsID int)
 		return nil, err
 	}
 
+	cars, err := b.repo.Cars.Detail(ctx, carsID)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPayment := common.CalculateRentalCost(payload.PickupDate, payload.DropoffDate, cars.DayRate, cars.MonthRate)
+
 	data := presentations.Order{
 		OrderID:         order.OrderID,
 		CarID:           payload.CarID,
@@ -96,6 +114,7 @@ func (b *business) Update(ctx context.Context, payload entity.Order, carsID int)
 		DropoffDate:     payload.DropoffDate,
 		PickupLocation:  payload.PickupLocation,
 		DropoffLocation: payload.DropoffLocation,
+		TotalPayment:    totalPayment,
 		IsActive:        order.IsActive,
 		CreatedAt:       order.CreatedAt,
 		UpdatedAt:       time.Now().Local(),

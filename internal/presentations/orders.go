@@ -20,6 +20,8 @@ type Order struct {
 	DropoffDate     time.Time `json:"dropoff_date" db:"dropoff_date"`
 	PickupLocation  string    `json:"pickup_location" db:"pickup_location"`
 	DropoffLocation string    `json:"dropoff_location" db:"dropoff_location"`
+	TotalPayment    float64   `json:"total_payment" db:"total_payment"`
+	UserID          int       `json:"user_id" db:"user_id"`
 	IsActive        bool      `json:"is_active" db:"is_active"`
 	CreatedAt       time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at" db:"updated_at"`
