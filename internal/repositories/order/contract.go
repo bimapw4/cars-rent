@@ -14,4 +14,5 @@ type Orders interface {
 	UpdateIsActive(ctx context.Context, orderID int, isActive bool) error
 	Delete(ctx context.Context, orderID int) error
 	Latest(ctx context.Context) (*presentations.Order, error)
+	DetailWithoutIsActive(ctx context.Context, orderID int) (*presentations.Order, error)
 }

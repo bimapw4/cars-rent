@@ -176,6 +176,7 @@ func (h *handler) List(c *fiber.Ctx) error {
 
 	res, err := h.business.Order.List(c.UserContext(), &m)
 	if err != nil {
+		fmt.Println("err ", err)
 		errs := custErr.GetError(err)
 		return response.NewResponse(Entity).
 			Errors("err parse body payload", errs.Message).

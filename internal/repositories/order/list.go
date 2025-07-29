@@ -58,7 +58,7 @@ func (r *repo) Count(ctx context.Context) (int, error) {
 
 	result := 0
 
-	query := `SELECT count(*) FROM orders and is_active=true`
+	query := `SELECT count(*) FROM orders where is_active=true`
 
 	args := map[string]interface{}{}
 

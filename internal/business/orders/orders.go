@@ -34,6 +34,7 @@ func NewBusiness(repo *repositories.Repository) Orders {
 func (b *business) Create(ctx context.Context, payload entity.Order) (*presentations.Order, error) {
 
 	userctx := common.GetUserCtx(ctx)
+
 	exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
 	if exist != nil {
 		return nil, presentations.ErrCarsNotAvailable
@@ -87,19 +88,23 @@ func (b *business) Detail(ctx context.Context, carsID int) (*presentations.Order
 	return res, nil
 }
 
-func (b *business) Update(ctx context.Context, payload entity.Order, carsID int) (*presentations.Order, error) {
+func (b *business) Update(ctx context.Context, payload entity.Order, orderID int) (*presentations.Order, error) {
 
-	exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
-	if exist != nil {
-		return nil, presentations.ErrCarsNotAvailable
-	}
+	userctx := common.GetUserCtx(ctx)
 
-	order, err := b.repo.Order.Detail(ctx, carsID)
+	order, err := b.repo.Order.Detail(ctx, orderID)
 	if err != nil {
 		return nil, err
 	}
 
-	cars, err := b.repo.Cars.Detail(ctx, carsID)
+	if order.CarID != payload.CarID {
+		exist, _ := b.repo.Cars.CheckAvailableCar(ctx, payload.CarID, payload.PickupDate, payload.DropoffDate)
+		if exist != nil {
+			return nil, presentations.ErrCarsNotAvailable
+		}
+	}
+
+	cars, err := b.repo.Cars.Detail(ctx, orderID)
 	if err != nil {
 		return nil, err
 	}
@@ -115,6 +120,7 @@ func (b *business) Update(ctx context.Context, payload entity.Order, carsID int)
 		PickupLocation:  payload.PickupLocation,
 		DropoffLocation: payload.DropoffLocation,
 		TotalPayment:    totalPayment,
+		UserID:          userctx.UserID,
 		IsActive:        order.IsActive,
 		CreatedAt:       order.CreatedAt,
 		UpdatedAt:       time.Now().Local(),
@@ -142,7 +148,7 @@ func (b *business) Delete(ctx context.Context, carsID int) error {
 }
 
 func (b *business) Activate(ctx context.Context, carsID int) error {
-	cars, err := b.repo.Order.Detail(ctx, carsID)
+	cars, err := b.repo.Order.DetailWithoutIsActive(ctx, carsID)
 	if err != nil {
 		return err
 	}
@@ -159,7 +165,7 @@ func (b *business) Activate(ctx context.Context, carsID int) error {
 }
 
 func (b *business) Deactivate(ctx context.Context, carsID int) error {
-	cars, err := b.repo.Order.Detail(ctx, carsID)
+	cars, err := b.repo.Order.DetailWithoutIsActive(ctx, carsID)
 	if err != nil {
 		return err
 	}

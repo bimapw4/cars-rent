@@ -84,7 +84,7 @@ func (s *JwtCode) DecodeAccessToken(accesstoken string) (*entity.Claim, error) {
 		return nil, err
 	}
 
-	userID, ok := claims["user_id"].(int)
+	userID, ok := claims["user_id"].(float64)
 	if !ok {
 		userID = 0
 	}
@@ -94,7 +94,7 @@ func (s *JwtCode) DecodeAccessToken(accesstoken string) (*entity.Claim, error) {
 		isAdmin = false
 	}
 	return &entity.Claim{
-		UserID:   userID,
+		UserID:   int(userID),
 		Username: fmt.Sprint(claims["username"]),
 		IsAdmin:  isAdmin,
 		Exp:      exp,
