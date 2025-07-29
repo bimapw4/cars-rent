@@ -30,6 +30,7 @@ func (s *JwtCode) GenerateAuthorizartionCode(payload entity.Claim) (string, erro
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = payload.UserID
 	claims["username"] = payload.Username
+	claims["is_admin"] = payload.IsAdmin
 	exp, _ := time.ParseDuration(s.lifetime)
 	claims["exp"] = time.Now().Add(exp).Unix() // Token expires in 1 hour
 
@@ -83,10 +84,19 @@ func (s *JwtCode) DecodeAccessToken(accesstoken string) (*entity.Claim, error) {
 		return nil, err
 	}
 
-	return &entity.Claim{
-		UserID:   fmt.Sprint(claims["user_id"]),
-		Username: fmt.Sprint(claims["username"]),
+	userID, ok := claims["user_id"].(int)
+	if !ok {
+		userID = 0
+	}
 
-		Exp: exp,
+	isAdmin, ok := claims["is_admin"].(bool)
+	if !ok {
+		isAdmin = false
+	}
+	return &entity.Claim{
+		UserID:   userID,
+		Username: fmt.Sprint(claims["username"]),
+		IsAdmin:  isAdmin,
+		Exp:      exp,
 	}, nil
 }
