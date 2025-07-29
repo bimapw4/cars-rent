@@ -16,7 +16,7 @@ func (r *repo) List(ctx context.Context, m *meta.Params) ([]presentations.Order,
 	if err != nil {
 		return nil, err
 	}
-	query := `SELECT* FROM orders where 1=1 ORDER BY created_at DESC OFFSET :offset LIMIT :limit`
+	query := `SELECT* FROM orders where 1=1 and is_active=true ORDER BY created_at DESC OFFSET :offset LIMIT :limit`
 
 	query = strings.Replace(
 		query,
@@ -58,7 +58,7 @@ func (r *repo) Count(ctx context.Context) (int, error) {
 
 	result := 0
 
-	query := `SELECT count(*) FROM orders`
+	query := `SELECT count(*) FROM orders and is_active=true`
 
 	args := map[string]interface{}{}
 

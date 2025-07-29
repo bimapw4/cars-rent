@@ -10,7 +10,7 @@ func (r *repo) Detail(ctx context.Context, orderID int) (*presentations.Order, e
 	var (
 		result presentations.Order
 	)
-	query := `select * from orders where order_id=:order_id`
+	query := `select * from orders where order_id=:order_id and is_active=true`
 
 	args := map[string]any{
 		"order_id": orderID,

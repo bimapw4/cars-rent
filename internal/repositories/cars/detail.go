@@ -10,7 +10,7 @@ func (r *repo) Detail(ctx context.Context, carsID int) (*presentations.Cars, err
 	var (
 		result presentations.Cars
 	)
-	query := `select * from cars where car_id=:car_id`
+	query := `select * from cars where car_id=:car_id and is_active=true`
 
 	args := map[string]any{
 		"car_id": carsID,
