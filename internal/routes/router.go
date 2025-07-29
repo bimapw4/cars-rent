@@ -9,7 +9,9 @@ import (
 
 func Routes(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication) {
 	// register route
-	routes := []func(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication){}
+	routes := []func(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication){
+		CarsRouter,
+	}
 
 	for _, route := range routes {
 		route(app, handler, m)
