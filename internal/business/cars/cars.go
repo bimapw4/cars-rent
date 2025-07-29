@@ -111,7 +111,7 @@ func (b *business) Delete(ctx context.Context, carsID int) error {
 }
 
 func (b *business) Activate(ctx context.Context, carsID int) error {
-	cars, err := b.repo.Cars.Detail(ctx, carsID)
+	cars, err := b.repo.Cars.DetailWithoutIsActive(ctx, carsID)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (b *business) Activate(ctx context.Context, carsID int) error {
 }
 
 func (b *business) Deactivate(ctx context.Context, carsID int) error {
-	cars, err := b.repo.Cars.Detail(ctx, carsID)
+	cars, err := b.repo.Cars.DetailWithoutIsActive(ctx, carsID)
 	if err != nil {
 		return err
 	}
