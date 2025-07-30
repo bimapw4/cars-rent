@@ -15,4 +15,5 @@ type Orders interface {
 	Delete(ctx context.Context, orderID int) error
 	Latest(ctx context.Context) (*presentations.Order, error)
 	DetailWithoutIsActive(ctx context.Context, orderID int) (*presentations.Order, error)
+	SummaryPerMonth(ctx context.Context) ([]presentations.Summary, error)
 }

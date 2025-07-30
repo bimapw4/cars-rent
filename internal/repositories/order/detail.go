@@ -71,3 +71,22 @@ func (r *repo) Latest(ctx context.Context) (*presentations.Order, error) {
 	}
 	return &result, nil
 }
+
+func (r *repo) SummaryPerMonth(ctx context.Context) ([]presentations.Summary, error) {
+
+	result := []presentations.Summary{}
+	query := `select date_trunc('month',pickup_date) as month, sum(total_payment) as payment, car_id from orders group by car_id, month`
+
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+	defer stmt.Close()
+
+	args := map[string]any{}
+	err = stmt.SelectContext(ctx, &result, args)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

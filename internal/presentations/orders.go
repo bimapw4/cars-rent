@@ -26,3 +26,9 @@ type Order struct {
 	CreatedAt       time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at" db:"updated_at"`
 }
+
+type Summary struct {
+	Month   time.Time `json:"month" db:"month"`
+	CarID   int       `json:"car_id" db:"car_id"`
+	Payment float64   `json:"payment" db:"payment"`
+}

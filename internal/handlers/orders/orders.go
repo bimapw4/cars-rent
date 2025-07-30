@@ -22,6 +22,7 @@ type Handler interface {
 	Delete(c *fiber.Ctx) error
 	Activate(c *fiber.Ctx) error
 	Deactivate(c *fiber.Ctx) error
+	Summary(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -351,5 +352,37 @@ func (h *handler) Deactivate(c *fiber.Ctx) error {
 
 	return response.NewResponse(Entity).
 		Success("Successfully Deactivate Order", nil).
+		JSON(c, http.StatusOK)
+}
+
+func (h *handler) Summary(c *fiber.Ctx) error {
+	var (
+		Entity = "SummaryOrder"
+	)
+	errAvail := common.DefaultAvailableErrors()
+	custErr := errAvail.CustomeError(common.AvailableErrors{
+		{
+			Code:    http.StatusNotFound,
+			Err:     presentations.ErrOrdersNotExist,
+			Message: presentations.ErrOrdersNotExist.Error(),
+		},
+		{
+			Code:    http.StatusConflict,
+			Err:     presentations.ErrCarsAlreadyExist,
+			Message: presentations.ErrCarsAlreadyExist.Error(),
+		},
+	})
+
+	res, err := h.business.Order.Summary(c.UserContext())
+	if err != nil {
+		fmt.Println("err", err)
+		errs := custErr.GetError(err)
+		return response.NewResponse(Entity).
+			Errors("err get summary order", errs.Message).
+			JSON(c, errs.Code)
+	}
+
+	return response.NewResponse(Entity).
+		Success("Successfully Summary Order", res).
 		JSON(c, http.StatusOK)
 }

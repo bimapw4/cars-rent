@@ -15,4 +15,5 @@ func OrdersRouter(app *fiber.App, handler handlers.Handlers, middleware *middlew
 	app.Delete("/order/:order_id", middleware.Authentication, handler.Order.Delete)
 	app.Put("/order/activate/:order_id", middleware.Authentication, handler.Order.Activate)
 	app.Put("/order/deactivate/:order_id", middleware.Authentication, handler.Order.Deactivate)
+	app.Get("/order/summary/trx", middleware.Authentication, handler.Order.Summary)
 }

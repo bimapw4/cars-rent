@@ -19,6 +19,7 @@ type Orders interface {
 	Delete(ctx context.Context, carsID int) error
 	Activate(ctx context.Context, carsID int) error
 	Deactivate(ctx context.Context, carsID int) error
+	Summary(ctx context.Context) ([]presentations.Summary, error)
 }
 
 type business struct {
@@ -179,4 +180,13 @@ func (b *business) Deactivate(ctx context.Context, carsID int) error {
 		return err
 	}
 	return nil
+}
+
+func (b *business) Summary(ctx context.Context) ([]presentations.Summary, error) {
+
+	res, err := b.repo.Order.SummaryPerMonth(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
