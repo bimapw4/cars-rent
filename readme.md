@@ -1,4 +1,6 @@
 # car-rent.
+This is a backend API for a Car Rental System, built using Go and PostgreSQL. It provides complete CRUD functionality for managing cars and rental orders, including features like JWT-based authentication, role-based access control, and automatic price calculation based on rental duration.
+
 
 ### 1. Project Structure
 <pre>
@@ -42,6 +44,21 @@
 | **Auth**      |Provides the authentication |
 | **Cars**          | Allows creating new cars just role admin, and user only read   |
 | **Orders**     | All role can order the cars and than will be count the total payment   |
+
+you can see the api collection on [Link Download](https://drive.google.com/file/d/13rB5j2u0qbHPhRFJebeSWIWHtSr3hrb1/view?usp=sharing)
+
+####  👤 Default Users (Seeded)
+| Username     | Password      | Role    |
+| ------------ | ------------- | ------- |
+| `admin_user` | `akuntest123` | Admin   |
+| `user_one`   | `akuntest123` | Regular |
+| `user_two`   | `akuntest123` | Regular |
+| `user_three` | `akuntest123` | Regular |
+
+
+* All passwords are securely hashed with bcrypt in the database.
+
+* You can use these accounts to test authentication and role-based access (e.g., admin-only routes).
 
 ### 3. Run the Project
 Without Docker
