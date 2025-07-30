@@ -1,7 +1,6 @@
 # car-rent.
 This is a backend API for a Car Rental System, built using Go and PostgreSQL. It provides complete CRUD functionality for managing cars and rental orders, including features like JWT-based authentication, role-based access control, and automatic price calculation based on rental duration.
 
-
 ### 1. Project Structure
 <pre>
 ├── bootstrap/                # App initialization (DB, DI, Migrations)
@@ -47,6 +46,10 @@ This is a backend API for a Car Rental System, built using Go and PostgreSQL. It
 
 you can see the api collection on [Link Download](https://drive.google.com/file/d/13rB5j2u0qbHPhRFJebeSWIWHtSr3hrb1/view?usp=sharing)
 
+```
+Database schema is auto-migrated on app startup (no need to run SQL manually)
+```
+
 ####  👤 Default Users (Seeded)
 | Username     | Password      | Role    |
 | ------------ | ------------- | ------- |
@@ -59,6 +62,7 @@ you can see the api collection on [Link Download](https://drive.google.com/file/
 * All passwords are securely hashed with bcrypt in the database.
 
 * You can use these accounts to test authentication and role-based access (e.g., admin-only routes).
+
 
 ### 3. Run the Project
 Without Docker
@@ -92,7 +96,7 @@ run the project go run main.go or use docker then the migration will run automat
 
 ### 6. Env Example
 ```
-APP_NAME = Payroll Payslip
+APP_NAME = Cars Rent
 PORT = 8083
 
 DB_HOST = 
